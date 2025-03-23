@@ -4,19 +4,79 @@
 #include <list>
 #include <algorithm>
 #include <iterator>
+#include <cstdlib>
+#include <ctime>
 
-using namespace std;
+using namespace std; // 0_0 Ну тут иначе никак
+
+vector<int> inputFromKeyboard() {
+    vector<int> data;
+    int num;
+    cout << "Введите числа:\n";
+    while (cin >> num) {
+        data.push_back(num);
+        if (cin.peek() == '\n') break;
+    }
+    cin.clear();
+    cin.ignore();
+    return data;
+}
+
+vector<int> generateRandomData(int count) {
+    vector<int> data;
+    srand(time(0));
+    for (int i = 0; i < count; ++i) {
+        data.push_back(rand() % 100);
+    }
+
+    cout << "Сгенерированные данные:\n";
+    for (int n : data) cout << n << " ";
+    cout << endl;
+    return data;
+}
+
+vector<int> readFromFile(const string& filename) {
+    vector<int> data;
+    ifstream fin("../"+filename);
+    if (!fin) {
+        cout << "Ошибка открытия файла!\n";
+        return data;
+    }
+    int num;
+    while (fin >> num) {
+        data.push_back(num);
+    }
+    return data;
+}
+
+vector<int> chooseInputMethod() {
+    cout << "Выберите способ ввода данных:\n"
+         << "1. С клавиатуры\n"
+         << "2. Случайные числа\n"
+         << "3. Из файла\n";
+    int choice;
+    cin >> choice;
+    cin.ignore();
+
+    switch (choice) {
+        case 1:
+            return inputFromKeyboard();
+        case 2:
+            int count;
+            cout << "Введите количество случайных чисел: ";
+            cin >> count;
+            return generateRandomData(count);
+        case 3:
+            string filename;
+            cout << "Введите имя файла: ";
+            cin >> filename;
+            return readFromFile(filename);
+    }
+}
 
 void task1() {
     list<int> L;
-    int num;
-    vector<int> temp;
-
-    cout << "Введите числа (количество должно делиться на 3):\n";
-    while (cin >> num) {
-        temp.push_back(num);
-        if (cin.peek() == '\n') break;
-    }
+    vector<int> temp = chooseInputMethod();
 
     if (temp.size() % 3 != 0) {
         cout << "Ошибка: количество чисел не делится на 3\n";
@@ -25,14 +85,14 @@ void task1() {
 
     L.assign(temp.begin(), temp.end());
     auto it = L.begin();
-    advance(it, L.size()/3);
+    advance(it, L.size() / 3);
 
     cout << "Результат:\n";
     for (auto i = L.begin(); i != it; ++i)
         cout << *i << " ";
 
     auto mid = it;
-    advance(mid, L.size()/3);
+    advance(mid, L.size() / 3);
     for (auto i = mid; i != it;)
         cout << *(--i) << " ";
 
@@ -44,21 +104,14 @@ void task1() {
 }
 
 void task2() {
-    vector<int> V;
-    int num;
-
-    cout << "Введите четное количество чисел для вектора:\n";
-    while (cin >> num) {
-        V.push_back(num);
-        if (cin.peek() == '\n') break;
-    }
+    vector<int> V = chooseInputMethod();
 
     if (V.size() % 2 != 0) {
         cout << "Ошибка: количество элементов нечетное\n";
         return;
     }
 
-    auto pos = V.begin() + V.size()/2;
+    auto pos = V.begin() + V.size() / 2;
     V.insert(pos, 5, 0);
 
     cout << "Результат:\n";
@@ -68,26 +121,20 @@ void task2() {
 
 void task3() {
     list<int> L1, L2;
-    int num;
 
-    cout << "Введите элементы для L1 и L2 (одинаковое количество):\n";
-    cout << "L1:\n";
-    while (cin >> num) {
-        L1.push_back(num);
-        if (cin.peek() == '\n') break;
-    }
-    cin.clear(); cin.ignore();
+    cout << "Введите данные для L1:\n";
+    vector<int> temp1 = chooseInputMethod();
 
-    cout << "L2:\n";
-    while (cin >> num) {
-        L2.push_back(num);
-        if (cin.peek() == '\n') break;
-    }
+    cout << "Введите данные для L2:\n";
+    vector<int> temp2 = chooseInputMethod();
 
-    if (L1.size() != L2.size()) {
+    if (temp1.size() != temp2.size()) {
         cout << "Ошибка: списки разной длины\n";
         return;
     }
+
+    L1.assign(temp1.begin(), temp1.end());
+    L2.assign(temp2.begin(), temp2.end());
 
     auto i1 = L1.begin();
     auto i2 = L2.begin();
